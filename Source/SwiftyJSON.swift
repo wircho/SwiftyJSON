@@ -125,8 +125,8 @@ public struct JSON {
                 _type = .Dictionary
             default:
                 _type = .Unknown
-                _object = NSNull()
-                _error = NSError(domain: ErrorDomain, code: ErrorUnsupportedType, userInfo: [NSLocalizedDescriptionKey: "It is a unsupported type"])
+                //_object = NSNull()
+                //_error = NSError(domain: ErrorDomain, code: ErrorUnsupportedType, userInfo: [NSLocalizedDescriptionKey: "It is a unsupported type"])
             }
         }
     }

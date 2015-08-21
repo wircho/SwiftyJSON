@@ -475,11 +475,12 @@ extension JSON: Swift.RawRepresentable {
 extension JSON: Swift.Printable, Swift.DebugPrintable {
     
     public var description: String {
-        if let string = self.rawString(options:.PrettyPrinted) {
-            return string
-        } else {
-            return "Object(\(self.object))"
-        }
+//        if let string = self.rawString(options:.PrettyPrinted) {
+//            return string
+//        } else {
+//            return "unknown"
+//        }
+          return "\(self.object)"
     }
     
     public var debugDescription: String {

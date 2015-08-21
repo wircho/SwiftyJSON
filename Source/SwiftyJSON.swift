@@ -478,7 +478,7 @@ extension JSON: Swift.Printable, Swift.DebugPrintable {
         if let string = self.rawString(options:.PrettyPrinted) {
             return string
         } else {
-            return "unknown"
+            return "Object(\(self.object))"
         }
     }
     

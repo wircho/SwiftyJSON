@@ -118,6 +118,7 @@ public struct JSON {
     private var rawDictionary: [String : AnyObject] = [:]
     private var rawString: String = ""
     private var rawNumber: NSNumber = 0
+    private var rawUnknown: AnyObject? = nil
     private var rawNull: NSNull = NSNull()
     /// Private type
     private var _type: Type = .Null
@@ -138,7 +139,9 @@ public struct JSON {
                 return self.rawNumber
             case .Bool:
                 return self.rawNumber
-            default:
+            case .Unknown:
+                return self.rawUnknown!
+            case .Null:
                 return self.rawNull
             }
         }
@@ -165,6 +168,7 @@ public struct JSON {
                 self.rawDictionary = dictionary
             default:
                 _type = .Unknown
+                self.rawUnknown = newValue
                 //_object = NSNull()
                 //_error = NSError(domain: ErrorDomain, code: ErrorUnsupportedType, userInfo: [NSLocalizedDescriptionKey: "It is a unsupported type"])
 
@@ -600,11 +604,17 @@ extension JSON: Swift.NilLiteralConvertible {
 extension JSON: Swift.RawRepresentable {
     
     public init?(rawValue: AnyObject) {
+        /*
         if JSON(rawValue).type == .Unknown {
-            return nil
+            return self.rawUnknown
         } else {
-            self.init(rawValue)
+        */
+        
+        self.init(rawValue)
+        
+        /*
         }
+        */
     }
     
     public var rawValue: AnyObject {
@@ -630,10 +640,10 @@ extension JSON: Swift.RawRepresentable {
             return self.rawNumber.stringValue
         case .Bool:
             return self.rawNumber.boolValue.description
+        case.Unknown:
+            return self.rawUnknown!.description
         case .Null:
             return "null"
-        default:
-            return nil
         }
     }
 }
@@ -1192,6 +1202,8 @@ public func ==(lhs: JSON, rhs: JSON) -> Bool {
         return lhs.rawArray as NSArray == rhs.rawArray as NSArray
     case (.Dictionary, .Dictionary):
         return lhs.rawDictionary as NSDictionary == rhs.rawDictionary as NSDictionary
+    case (.Unknown, .Unknown):
+        return lhs.rawUnknown! === rhs.rawUnknown!
     case (.Null, .Null):
         return true
     default:

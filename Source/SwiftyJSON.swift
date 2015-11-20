@@ -1203,7 +1203,27 @@ public func ==(lhs: JSON, rhs: JSON) -> Bool {
     case (.Dictionary, .Dictionary):
         return lhs.rawDictionary as NSDictionary == rhs.rawDictionary as NSDictionary
     case (.Unknown, .Unknown):
-        return lhs.rawUnknown! === rhs.rawUnknown!
+        var lhsObject = lhs.object
+        var rhsObject = rhs.object
+        var unwrapped = false
+        if let w = lhsObject as? WeakBox {
+            unwrapped = true
+            lhsObject = w.value ?? NSNull()
+        }
+        if let w = rhsObject as? WeakBox {
+            unwrapped = true
+            rhsObject = w.value ?? NSNull()
+        }
+        if unwrapped {
+            return JSON(lhsObject) == JSON(rhsObject)
+        }else {
+            if let l = lhsObject as? NSObject, let r = rhsObject as? NSObject {
+                return l.isEqual(r)
+            }else {
+                return lhsObject === rhsObject
+            }
+        }
+        
     case (.Null, .Null):
         return true
     default:
@@ -1357,4 +1377,30 @@ public func >=(lhs: NSNumber, rhs: NSNumber) -> Bool {
     default:
         return lhs.compare(rhs) != NSComparisonResult.OrderedAscending
     }
+}
+
+public final class WeakBox : CustomStringConvertible {
+    
+    /// Initializes a `WeakBox` with the given value.
+    public init(_ value: AnyObject?) {
+        self.value = value
+    }
+    
+    /// Constructs a `WeakBox` with the given `value`.
+    class func unit(value: AnyObject) -> WeakBox {
+        return WeakBox(value)
+    }
+    
+    /// The (immutable) value wrapped by the receiver.
+    public private(set) weak var value: AnyObject?
+    
+    /// Constructs a new Box by transforming `value` by `f`.
+    func map(@noescape f: AnyObject? -> AnyObject?) -> WeakBox {
+        return WeakBox(f(self.value))
+    }
+    
+    public var description: String {
+        return String(self.value)
+    }
+    
 }

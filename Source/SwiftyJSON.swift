@@ -1223,7 +1223,14 @@ public func ==(lhs: JSON, rhs: JSON) -> Bool {
                 return lhsObject === rhsObject
             }
         }
-        
+    case (.Unknown,.Null):
+        var object:AnyObject? = lhs.object
+        while object is WeakBox {
+            object = (object as! WeakBox).value
+        }
+        return object == nil || object as? NSNull != nil
+    case (.Null,.Unknown):
+        return rhs == lhs
     case (.Null, .Null):
         return true
     default:

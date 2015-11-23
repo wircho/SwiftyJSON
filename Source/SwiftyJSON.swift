@@ -1407,7 +1407,7 @@ public final class WeakBox : CustomStringConvertible {
     }
     
     public var description: String {
-        return String(self.value)
+        return "WeakBox(" + String(self.value ?? "null") + ")"
     }
     
 }
